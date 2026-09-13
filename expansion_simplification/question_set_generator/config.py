@@ -3,11 +3,11 @@
 COEFFICIENT_MIN = -99
 COEFFICIENT_MAX = 99
 
-# A denominator cap of 12 keeps the default output at a middle-school level.
 # All coefficients are integers in the current configuration.
 FRACTION_DENOMINATOR_MAX = None
 INTEGER_PROBABILITY = 1.0
 
+# A denominator cap of 12 keeps the default output at a middle-school level.
 # Most integer coefficients are kept fairly small for readable middle-school
 # exercises, while some are sampled from the full requested [-99, 99] range.
 SMALL_INTEGER_MIN = -12
