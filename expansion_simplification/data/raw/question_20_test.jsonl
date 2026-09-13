@@ -1,20 +1,20 @@
-{"problem":"Simplify the polynomial equation $x*(9 - 3*x^2 - 12*x) - 6*x*(-2*x^2 + 5 - 10*x)$.","answer":"9*x^3 + 48*x^2 - 21*x"}
-{"problem":"Simplify the polynomial equation $(-5 - 6*x)^2$.","answer":"36*x^2 + 60*x + 25"}
-{"problem":"Simplify the polynomial equation $-(12 + 7*x^2 - 9*x - 17*(2*x^2 + 5*x + 6))$.","answer":"27*x^2 + 94*x + 90"}
-{"problem":"Simplify the polynomial equation $3*x*(4 - 3*x - 5*x^2) - x^2*(-11 - 67*x)$.","answer":"52*x^3 + 2*x^2 + 12*x"}
-{"problem":"Simplify the polynomial equation $-55 - 5 + 38 - 9*x^2 - 6*x^2$.","answer":"-15*x^2 - 22"}
-{"problem":"Simplify the polynomial equation $(3 + 2*x)^2$.","answer":"4*x^2 + 12*x + 9"}
-{"problem":"Simplify the polynomial equation $-4*x^2*(-3 - 3*y) - 7*x*y*(10*x + 5)$.","answer":"-58*x^2*y + 12*x^2 - 35*x*y"}
-{"problem":"Simplify the polynomial equation $55*x + 3*x^2 + 9*x^3 - 5 - 5*x^3 + 9 - x^2 - 6*x$.","answer":"4*x^3 + 2*x^2 + 49*x + 4"}
-{"problem":"Simplify the polynomial equation $(3*x^2 - 12)*(2*x^2 + 8 + 3*x)$.","answer":"6*x^4 + 9*x^3 - 36*x - 96"}
-{"problem":"Simplify the polynomial equation $79*y + 15*y - 8*x^2*y + 10*x - 35 - 8*x^2*y - 10*x - 30*x*y + 6*x*y + 8*x^2*y - 8$.","answer":"-8*x^2*y - 24*x*y + 94*y - 43"}
-{"problem":"Simplify the polynomial equation $-4*(5 - 11*x^2 - 9*(-x^2 + 2))$.","answer":"8*x^2 + 52"}
-{"problem":"Simplify the polynomial equation $-8*x*(-10 - 11*x^2) - 7*x*(11*x - 2) - 9*x*(2 + 9*x^2)$.","answer":"7*x^3 - 77*x^2 + 76*x"}
-{"problem":"Simplify the polynomial equation $3*(10*x + 16*x^2 + 12 - (-x^2 + 10*x + 8))$.","answer":"51*x^2 + 12"}
-{"problem":"Simplify the polynomial equation $3*x^2*(-2 + 3*x) + x*(-12 - 8*x^2 + 12*x)$.","answer":"x^3 + 6*x^2 - 12*x"}
-{"problem":"Simplify the polynomial equation $(8*x - 4)^2$.","answer":"64*x^2 - 64*x + 16"}
-{"problem":"Simplify the polynomial equation $(3*x + 71*x^2 - 8 + (-8*x^2 + 6))$.","answer":"63*x^2 + 3*x - 2"}
-{"problem":"Simplify the polynomial equation $(3*x^2 + 9)*(8 - 11*y)$.","answer":"-33*x^2*y + 24*x^2 - 99*y + 72"}
-{"problem":"Simplify the polynomial equation $2*x - 2 + 98*x - 1 - 24*x$.","answer":"76*x - 3"}
-{"problem":"Simplify the polynomial equation $(11*y^2 + 4 - 5*(12*y^2 + 6*x + 9))$.","answer":"-49*y^2 - 30*x - 41"}
-{"problem":"Simplify the polynomial equation $7*x + 8*x + 2*x^2 - 5 - 3*x^2 + 8$.","answer":"-x^2 + 15*x + 3"}
+{"problem":"Simplify the polynomial equation $x*(9 - 3*x^2 - 12*x) - 6*x*(-2*x^2 + 5 - 10*x)$.","correct answer":"9*x^3 + 48*x^2 - 21*x"}
+{"problem":"Simplify the polynomial equation $(-5 - 6*x)^2$.","correct answer":"36*x^2 + 60*x + 25"}
+{"problem":"Simplify the polynomial equation $-(12 + 7*x^2 - 9*x - 17*(2*x^2 + 5*x + 6))$.","correct answer":"27*x^2 + 94*x + 90"}
+{"problem":"Simplify the polynomial equation $3*x*(4 - 3*x - 5*x^2) - x^2*(-11 - 67*x)$.","correct answer":"52*x^3 + 2*x^2 + 12*x"}
+{"problem":"Simplify the polynomial equation $-55 - 5 + 38 - 9*x^2 - 6*x^2$.","correct answer":"-15*x^2 - 22"}
+{"problem":"Simplify the polynomial equation $(3 + 2*x)^2$.","correct answer":"4*x^2 + 12*x + 9"}
+{"problem":"Simplify the polynomial equation $-4*x^2*(-3 - 3*y) - 7*x*y*(10*x + 5)$.","correct answer":"-58*x^2*y + 12*x^2 - 35*x*y"}
+{"problem":"Simplify the polynomial equation $55*x + 3*x^2 + 9*x^3 - 5 - 5*x^3 + 9 - x^2 - 6*x$.","correct answer":"4*x^3 + 2*x^2 + 49*x + 4"}
+{"problem":"Simplify the polynomial equation $(3*x^2 - 12)*(2*x^2 + 8 + 3*x)$.","correct answer":"6*x^4 + 9*x^3 - 36*x - 96"}
+{"problem":"Simplify the polynomial equation $79*y + 15*y - 8*x^2*y + 10*x - 35 - 8*x^2*y - 10*x - 30*x*y + 6*x*y + 8*x^2*y - 8$.","correct answer":"-8*x^2*y - 24*x*y + 94*y - 43"}
+{"problem":"Simplify the polynomial equation $-4*(5 - 11*x^2 - 9*(-x^2 + 2))$.","correct answer":"8*x^2 + 52"}
+{"problem":"Simplify the polynomial equation $-8*x*(-10 - 11*x^2) - 7*x*(11*x - 2) - 9*x*(2 + 9*x^2)$.","correct answer":"7*x^3 - 77*x^2 + 76*x"}
+{"problem":"Simplify the polynomial equation $3*(10*x + 16*x^2 + 12 - (-x^2 + 10*x + 8))$.","correct answer":"51*x^2 + 12"}
+{"problem":"Simplify the polynomial equation $3*x^2*(-2 + 3*x) + x*(-12 - 8*x^2 + 12*x)$.","correct answer":"x^3 + 6*x^2 - 12*x"}
+{"problem":"Simplify the polynomial equation $(8*x - 4)^2$.","correct answer":"64*x^2 - 64*x + 16"}
+{"problem":"Simplify the polynomial equation $(3*x + 71*x^2 - 8 + (-8*x^2 + 6))$.","correct answer":"63*x^2 + 3*x - 2"}
+{"problem":"Simplify the polynomial equation $(3*x^2 + 9)*(8 - 11*y)$.","correct answer":"-33*x^2*y + 24*x^2 - 99*y + 72"}
+{"problem":"Simplify the polynomial equation $2*x - 2 + 98*x - 1 - 24*x$.","correct answer":"76*x - 3"}
+{"problem":"Simplify the polynomial equation $(11*y^2 + 4 - 5*(12*y^2 + 6*x + 9))$.","correct answer":"-49*y^2 - 30*x - 41"}
+{"problem":"Simplify the polynomial equation $7*x + 8*x + 2*x^2 - 5 - 3*x^2 + 8$.","correct answer":"-x^2 + 15*x + 3"}

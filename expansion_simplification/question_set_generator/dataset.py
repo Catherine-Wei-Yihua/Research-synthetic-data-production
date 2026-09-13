@@ -108,7 +108,7 @@ def generate_dataset(
     for candidate in candidates:
         record = {
             "problem": f"Simplify the polynomial equation ${candidate.problem}$.",
-            "answer": render_poly(candidate.answer_poly),
+            "correct answer": render_poly(candidate.answer_poly),
         }
         if include_category:
             record["category"] = candidate.category
