@@ -48,7 +48,7 @@ def main() -> None:
         Path(__file__).resolve().parent
         / "data"
         / "raw"
-        / f"expansion_simplification_{args.n}.jsonl"
+        / f"simplification_{args.n}.jsonl"
     )
 
     # Build and validate the complete, category-balanced dataset.
