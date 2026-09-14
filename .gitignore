@@ -3,3 +3,9 @@
 
 #VS code Environment
 .vscode/
+
+#Quadratic_equation
+quadratic_equation/code_and_example
+quadratic_equation/data/*
+!quadratic_equation/data/clean/
+!quadratic_equation/data/clean/**
