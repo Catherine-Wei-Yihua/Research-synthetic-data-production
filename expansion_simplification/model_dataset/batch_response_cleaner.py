@@ -71,39 +71,103 @@ def parse_model_content(content: Any, line_number: int) -> dict[str, Any]:
     return parsed
 
 
-def extract_response_record(record: dict[str, Any], line_number: int) -> dict[str, Any]:
-    """Extract requested tidy fields from one nested Together Batch response."""
-    try:
-        status_code = record["response"]["status_code"]
-        response_body = record["response"]["body"]
-        message = response_body["choices"][0]["message"]
-        content = parse_model_content(message["content"], line_number)
-        tidy = {
-            "id": record["id"],
-            "model": response_body["model"],
-            "question_id": record["custom_id"],
-            "question": content["question"],
-            "steps": content["steps"],
-            "final_answer": content["final_answer"],
-        }
-    except (KeyError, IndexError, TypeError) as error:
-        raise ValueError(
-            f"Response line {line_number} is missing required data: {error}"
-        ) from error
+def nonempty_string(value: Any) -> str | None:
+    """Return a nonempty string without changing its content."""
+    return value if isinstance(value, str) and value.strip() else None
 
-    if status_code != 200:
-        raise ValueError(f"Response line {line_number} has HTTP status {status_code}")
-    for field_name in ("id", "model", "question_id", "question", "final_answer"):
-        value = tidy[field_name]
-        if not isinstance(value, str) or not value.strip():
-            raise ValueError(
-                f"Response line {line_number} has invalid {field_name!r} content"
-            )
-    if not isinstance(tidy["steps"], list) or not all(
-        isinstance(step, str) for step in tidy["steps"]
-    ):
-        raise ValueError(f"Response line {line_number} 'steps' must be a list of strings")
-    return tidy
+
+def extract_boxed_content(text: str) -> str | None:
+    """Return the last complete ``\\boxed{...}`` value, including nested braces."""
+    extracted: str | None = None
+    for match in re.finditer(r"\\boxed\s*\{", text):
+        content_start = match.end()
+        depth = 1
+        index = content_start
+        while index < len(text):
+            character = text[index]
+            preceding_backslashes = 0
+            backslash_index = index - 1
+            while backslash_index >= 0 and text[backslash_index] == "\\":
+                preceding_backslashes += 1
+                backslash_index -= 1
+            is_escaped = preceding_backslashes % 2 == 1
+
+            if character == "{" and not is_escaped:
+                depth += 1
+            elif character == "}" and not is_escaped:
+                depth -= 1
+                if depth == 0:
+                    candidate = text[content_start:index]
+                    if candidate.strip():
+                        extracted = candidate
+                    break
+            index += 1
+    return extracted
+
+
+def final_answer_from_content(
+    content: dict[str, Any],
+    steps: list[str] | None,
+) -> str | None:
+    """Use the explicit answer, then fall back to the last step's boxed value."""
+    explicit_answer = nonempty_string(content.get("final_answer"))
+    if explicit_answer is not None:
+        return explicit_answer
+    if steps:
+        return extract_boxed_content(steps[-1])
+    return None
+
+
+def extract_response_record(record: dict[str, Any], line_number: int) -> dict[str, Any]:
+    """Extract tidy fields while retaining unusable responses as null-valued rows."""
+    response_id = nonempty_string(record.get("id"))
+    question_id = nonempty_string(record.get("custom_id"))
+    if response_id is None or question_id is None:
+        raise ValueError(
+            f"Response line {line_number} needs nonempty 'id' and 'custom_id' fields"
+        )
+
+    response = record.get("response")
+    response_body = response.get("body") if isinstance(response, dict) else None
+    status_code = response.get("status_code") if isinstance(response, dict) else None
+    model = (
+        nonempty_string(response_body.get("model"))
+        if isinstance(response_body, dict)
+        else None
+    )
+
+    content: dict[str, Any] = {}
+    if status_code == 200 and isinstance(response_body, dict):
+        try:
+            message = response_body["choices"][0]["message"]
+            content = parse_model_content(message["content"], line_number)
+        except (KeyError, IndexError, TypeError, ValueError):
+            # A failed or malformed model payload still represents one Batch row.
+            # Keep it in the clean dataset and mark its answer as unavailable.
+            content = {}
+
+    question = nonempty_string(content.get("question"))
+    if question is None:
+        question = nonempty_string(content.get("subproblem"))
+
+    raw_steps = content.get("steps")
+    if raw_steps is None:
+        raw_steps = content.get("substeps")
+    steps = (
+        raw_steps
+        if isinstance(raw_steps, list)
+        and all(isinstance(step, str) for step in raw_steps)
+        else None
+    )
+
+    return {
+        "id": response_id,
+        "model": model,
+        "question_id": question_id,
+        "question": question,
+        "steps": steps,
+        "final_answer": final_answer_from_content(content, steps),
+    }
 
 
 def normalize_question(question: str) -> str:
@@ -128,6 +192,9 @@ def normalize_answer_text(answer: str) -> str:
     normalized = re.sub(r"\^\{([+-]?\d+)\}", r"^\1", normalized)
     normalized = normalized.rstrip(".")
     normalized = "".join(normalized.split())
+    # Some models return the simplified expression as an equation ending in
+    # ``= 0``.  This is the same requested polynomial, not a different answer.
+    normalized = re.sub(r"=0$", "", normalized)
     normalized = normalized.replace("**", "^")
     return normalized
 
@@ -234,9 +301,12 @@ def answers_are_equal(model_answer: str, correct_answer: str) -> bool:
         )
 
 
-def reference_answers(records: Iterable[dict[str, Any]]) -> dict[str, str]:
-    """Index reference answers by normalized question text."""
+def reference_answers(
+    records: Iterable[dict[str, Any]],
+) -> tuple[dict[str, str], list[str]]:
+    """Index reference answers by question text and preserve source order."""
     references: dict[str, str] = {}
+    ordered_answers: list[str] = []
     for line_number, record in enumerate(records, start=1):
         question = record.get("problem")
         answer = record.get("correct answer")
@@ -248,12 +318,37 @@ def reference_answers(records: Iterable[dict[str, Any]]) -> dict[str, str]:
         if key in references:
             raise ValueError(f"Duplicate reference question at line {line_number}")
         references[key] = answer
-    return references
+        ordered_answers.append(answer)
+    return references, ordered_answers
+
+
+def reference_answer_for_response(
+    question_id: str,
+    question: str | None,
+    references: dict[str, str],
+    ordered_answers: Sequence[str],
+) -> str:
+    """Find the source answer by Batch sequence ID, then by question text."""
+    sequence_match = re.fullmatch(r".+-(\d{6})", question_id)
+    if sequence_match:
+        source_index = int(sequence_match.group(1)) - 1
+        if 0 <= source_index < len(ordered_answers):
+            return ordered_answers[source_index]
+
+    if question is not None:
+        question_key = normalize_question(question)
+        if question_key in references:
+            return references[question_key]
+    raise ValueError(
+        f"question_id {question_id!r} and its question were not found in the "
+        "reference dataset"
+    )
 
 
 def clean_and_score(
     response_records: Iterable[dict[str, Any]],
     references: dict[str, str],
+    ordered_answers: Sequence[str],
 ) -> list[dict[str, Any]]:
     """Flatten responses and add a boolean correctness result."""
     output: list[dict[str, Any]] = []
@@ -267,16 +362,24 @@ def clean_and_score(
             )
         seen_question_ids.add(question_id)
 
-        question_key = normalize_question(tidy["question"])
-        if question_key not in references:
-            raise ValueError(
-                f"Response line {line_number} question_id {question_id!r} was not "
-                "found in the reference dataset"
+        if tidy["final_answer"] is None:
+            tidy["whether_correct"] = None
+        else:
+            try:
+                correct_answer = reference_answer_for_response(
+                    question_id,
+                    tidy["question"],
+                    references,
+                    ordered_answers,
+                )
+            except ValueError as error:
+                raise ValueError(
+                    f"Response line {line_number} {error}"
+                ) from error
+            tidy["whether_correct"] = answers_are_equal(
+                tidy["final_answer"],
+                correct_answer,
             )
-        tidy["whether_correct"] = answers_are_equal(
-            tidy["final_answer"],
-            references[question_key],
-        )
         output.append(tidy)
     return output
 
@@ -323,16 +426,29 @@ def main() -> None:
     try:
         response_records = read_jsonl(args.input)
         reference_records = read_jsonl(args.reference)
-        references = reference_answers(reference_records)
-        cleaned_records = clean_and_score(response_records, references)
+        references, ordered_answers = reference_answers(reference_records)
+        cleaned_records = clean_and_score(
+            response_records,
+            references,
+            ordered_answers,
+        )
         write_jsonl(cleaned_records, output_path)
     except ValueError as error:
         raise SystemExit(f"Cleaning error: {error}") from error
 
-    correct_count = sum(record["whether_correct"] for record in cleaned_records)
+    correct_count = sum(
+        record["whether_correct"] is True for record in cleaned_records
+    )
+    incorrect_count = sum(
+        record["whether_correct"] is False for record in cleaned_records
+    )
+    unavailable_count = sum(
+        record["whether_correct"] is None for record in cleaned_records
+    )
     print(f"Cleaned {len(cleaned_records)} records")
     print(f"Correct:   {correct_count}")
-    print(f"Incorrect: {len(cleaned_records) - correct_count}")
+    print(f"Incorrect: {incorrect_count}")
+    print(f"Unavailable: {unavailable_count}")
     print(f"Output:    {output_path}")
 
 
