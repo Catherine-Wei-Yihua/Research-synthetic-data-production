@@ -31,7 +31,7 @@ def parse_args() -> argparse.Namespace:
         "--output",
         type=Path,
         default=None,
-        help="Output path; default: data/raw/expansion_simplification_<n>.jsonl",
+        help="Output path; default: data/raw/simplification_<n>.jsonl",
     )
     parser.add_argument(
         "--include-category",
