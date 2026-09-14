@@ -19,7 +19,7 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from raw_question_generation.dataset import generate_dataset, print_summary, write_jsonl
+from raw_question.dataset import generate_dataset, print_summary, write_jsonl
 
 
 def parse_args() -> argparse.Namespace:

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Convert raw question JSONL into Together AI Batch API request JSONL."""
+# Provide an input file and model to produce Batch API JSONL output.
 
 from __future__ import annotations
 
@@ -200,7 +201,8 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--input",
         type=Path,
-        help="Raw JSONL input path (default: data/raw/question_20_test.jsonl)",
+        default=Path("data/raw/expansion_20_202608162.jsonl"),
+        help="Raw JSONL input path (default: data/raw/expansion_20_202608162.jsonl)",
     )
     parser.add_argument(
         "--prompt-file",
