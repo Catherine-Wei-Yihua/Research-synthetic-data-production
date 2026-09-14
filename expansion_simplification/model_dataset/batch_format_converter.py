@@ -200,7 +200,6 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--input",
         type=Path,
-        default=Path("data/raw/question_20_test.jsonl"),
         help="Raw JSONL input path (default: data/raw/question_20_test.jsonl)",
     )
     parser.add_argument(

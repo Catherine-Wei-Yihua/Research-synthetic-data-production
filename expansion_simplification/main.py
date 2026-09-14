@@ -31,7 +31,7 @@ def parse_args() -> argparse.Namespace:
         "--output",
         type=Path,
         default=None,
-        help="Output path; default: data/raw/simplification_<n>.jsonl",
+        help="Output path; default: data/raw/expansion_<n>_<seed>.jsonl",
     )
     parser.add_argument(
         "--include-category",
@@ -48,7 +48,7 @@ def main() -> None:
         Path(__file__).resolve().parent
         / "data"
         / "raw"
-        / f"simplification_{args.n}.jsonl"
+        / f"expansion_{args.n}_{args.seed}.jsonl"
     )
 
     # Build and validate the complete, category-balanced dataset.
