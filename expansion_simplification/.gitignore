@@ -2,3 +2,7 @@
 data/raw/
 data/batch/
 data/raw_output/
+
+#pycache
+__pycache__/
+*.pyc
