@@ -25,13 +25,13 @@ from raw_question_generation.dataset import generate_dataset, print_summary, wri
 def parse_args() -> argparse.Namespace:
     """Parse command-line options for the generation pipeline."""
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--n", type=int, default=20, help="Number of questions (default: 100)")
+    parser.add_argument("--n", type=int, default=20, help="Number of questions (default: 20)")
     parser.add_argument("--seed", type=int, default=202608162, help="Random seed")
     parser.add_argument(
         "--output",
         type=Path,
         default=None,
-        help="Output path; default: expansion_simplification_<n>.jsonl beside this script",
+        help="Output path; default: data/raw/expansion_simplification_<n>.jsonl",
     )
     parser.add_argument(
         "--include-category",
@@ -44,8 +44,11 @@ def parse_args() -> argparse.Namespace:
 def main() -> None:
     """Run generation, serialization, and summary reporting."""
     args = parse_args()
-    output_path = args.output or Path(__file__).with_name(
-        f"expansion_simplification_{args.n}.jsonl"
+    output_path = args.output or (
+        Path(__file__).resolve().parent
+        / "data"
+        / "raw"
+        / f"expansion_simplification_{args.n}.jsonl"
     )
 
     # Build and validate the complete, category-balanced dataset.
