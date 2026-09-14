@@ -207,9 +207,8 @@ def reasoning_choice(value: str) -> bool:
         ) from error
 
 
-def parse_args(argv: Sequence[str] | None = None) -> Hyperparameters:
-    """Parse manually adjustable hyperparameters from the command line."""
-    parser = argparse.ArgumentParser(description=__doc__)
+def add_hyperparameter_arguments(parser: argparse.ArgumentParser) -> None:
+    """Add the shared Together hyperparameter options to a CLI parser."""
     parser.add_argument(
         "--model",
         default=model,
@@ -253,7 +252,10 @@ def parse_args(argv: Sequence[str] | None = None) -> Hyperparameters:
             "(default: '{\"type\":\"json_object\"}')"
         ),
     )
-    namespace = parser.parse_args(argv)
+
+
+def hyperparameters_from_namespace(namespace: argparse.Namespace) -> Hyperparameters:
+    """Build a Hyperparameters instance from shared CLI options."""
     return Hyperparameters(
         model=namespace.model,
         temperature=namespace.temperature,
@@ -262,6 +264,14 @@ def parse_args(argv: Sequence[str] | None = None) -> Hyperparameters:
         reasoning_enabled=namespace.reasoning,
         response_format=namespace.response_format,
     )
+
+
+def parse_args(argv: Sequence[str] | None = None) -> Hyperparameters:
+    """Parse manually adjustable hyperparameters from the command line."""
+    parser = argparse.ArgumentParser(description=__doc__)
+    add_hyperparameter_arguments(parser)
+    namespace = parser.parse_args(argv)
+    return hyperparameters_from_namespace(namespace)
 
 
 def main() -> None:
